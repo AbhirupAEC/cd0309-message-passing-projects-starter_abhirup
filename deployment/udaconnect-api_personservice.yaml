@@ -1,24 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: udaconnect-api-personservice
+  name: udaconnect-api-personservice
+spec:
+  ports:
+    - name: "5000"
+      port: 5000
+      targetPort: 5000
+      nodePort: 32711
+  selector:
+    service: udaconnect-api-personservice
+  type: NodePort
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kafka-consumer-person
+  labels:
+    service: udaconnect-api-personservice
+  name: udaconnect-api-personservice
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kafka-consumer-person
+      service: udaconnect-api-personservice
   template:
     metadata:
       labels:
-        app: kafka-consumer-person
+        service: udaconnect-api-personservice
     spec:
       containers:
-        - name: kafka-consumer-person
-          image: rismitaghosh/kafkapersonconsumer:latest
+        - image: rismitaghosh/udaconnectpersonservice:latest
+          name: udaconnect-api-personservice
           imagePullPolicy: Always
           env:
-            - name: KAFKA_BOOTSTRAP_SERVERS
-              value: "kafka-broker:9092"
             - name: DB_USERNAME
               valueFrom:
                 configMapKeyRef:
@@ -44,3 +60,4 @@ spec:
                 configMapKeyRef:
                   name: db-env
                   key: DB_PORT
+      restartPolicy: Always
