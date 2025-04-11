@@ -2,9 +2,12 @@ import json
 import psycopg2
 import os
 from kafka import KafkaConsumer
+from shapely.geometry import Point
+from shapely.wkb import dumps
+import binascii
 
 # Kafka configuration
-TOPIC_NAME = 'udaconnect_person_create'
+TOPIC_NAME = 'udaconnect_location_create'
 KAFKA_BOOTSTRAP_SERVERS = 'kafka-broker:9092'
 
 # PostgreSQL configuration
@@ -30,18 +33,18 @@ def create_db_connection():
         return None
 
 # Insert data into PostgreSQL table
-def insert_into_postgres(id,first_name, last_name, company_name):
+def insert_into_postgres(id,person_id,coordinate,creation_time):
     conn = create_db_connection()
     if conn is not None:
         cursor = conn.cursor()
         try:
             # Insert record into the table
             cursor.execute(
-                "INSERT INTO person (id,first_name, last_name, company_name) VALUES (%s, %s, %s, %s)",
-                (id,first_name, last_name, company_name)
+                "INSERT INTO location (id,person_id,coordinate,creation_time) VALUES (%s, %s, %s, %s)",
+                (id,person_id,coordinate,creation_time)
             )
             conn.commit()
-            print(f"Inserted: {id} {first_name} {last_name} from {company_name}")
+            print(f"Inserted: {id} {person_id} {coordinate} {creation_time}")
         except Exception as e:
             print(f"Error inserting record: {e}")
         finally:
@@ -62,14 +65,16 @@ consumer = KafkaConsumer(
 def main() -> None:
     for message in consumer:
     # Extract the message value
-        person_data = message.value
-        id = person_data.get("id")
-        first_name = person_data.get("first_name")
-        last_name = person_data.get("last_name")
-        company_name = person_data.get("company_name")
+        location_data = message.value
+        id = location_data.get("id")
+        person_id = location_data.get("person_id")
+        creation_time = location_data.get("creation_time")       
+        # Create Point with (longitude, latitude)
+        point = Point(location_data.get("latitude"),location_data.get("longitude"))
+        # Convert to WKB and then to hex string
+        wkb_hex = binascii.hexlify(dumps(point, hex=False)).decode("utf-8").upper()
         
-        # Insert the data into PostgreSQL
-        insert_into_postgres(id,first_name, last_name, company_name)
+        insert_into_postgres(id,person_id,wkb_hex,creation_time)
 
 
 if __name__ == "__main__":
@@ -80,6 +85,22 @@ if __name__ == "__main__":
 
 
 
+# from kafka import KafkaConsumer
+# import json
+
+# consumer = KafkaConsumer(
+#     'udaconnect_person_create',
+#     bootstrap_servers='kafka-broker:9092',
+#     auto_offset_reset='earliest',
+#     enable_auto_commit=True,
+#     group_id='my-consumer-group',
+#     value_deserializer=lambda x: json.loads(x.decode('utf-8'))
+# )
+
+# print("Kafka consumer started...")
+
+# for message in consumer:
+#     print(f"Received message: {message.value}")
 
 
 
@@ -95,20 +116,3 @@ if __name__ == "__main__":
 
 
 
-
-from kafka import KafkaConsumer
-import json
-
-consumer = KafkaConsumer(
-    'udaconnect_person_create',
-    bootstrap_servers='kafka-broker:9092',
-    auto_offset_reset='earliest',
-    enable_auto_commit=True,
-    group_id='my-consumer-group',
-    value_deserializer=lambda x: json.loads(x.decode('utf-8'))
-)
-
-print("Kafka consumer started...")
-
-for message in consumer:
-    print(f"Received message: {message.value}")

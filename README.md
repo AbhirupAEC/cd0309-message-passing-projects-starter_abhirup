@@ -79,14 +79,16 @@ Afterwards, you can test that `kubectl` works by running a command like `kubectl
 1. `kubectl apply -f deployment/db-configmap.yaml` - Set up environment variables for the pods
 2. `kubectl apply -f deployment/db-secret.yaml` - Set up secrets for the pods
 3. `kubectl apply -f deployment/postgres.yaml` - Set up a Postgres database running PostGIS
-4. `kubectl apply -f deployment/udaconnect-api.yaml` - Set up the service and deployment for the API
+4. `kubectl apply -f deployment/udaconnect-api_connections.yaml` - Set up the service and deployment for the API
 5. `kubectl apply -f deployment/udaconnect-app.yaml` - Set up the service and deployment for the web app
 6. `kubectl apply -f deployment/kafka.yaml` - Set up kafka, remember to run the script to create the topic
 7. `sh scripts/run_db_command.sh <POD_NAME>` - Seed your database against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`)
 8. `sh ./create_kafka_topics.sh  <POD_NAME>` - Run this command to create the topics of kafka
-9. `kubectl apply -f deployment/kafka_consumer.yaml` - Set up kafka consumer which will poll the topic and insert data into the db
+9. `kubectl apply -f deployment/kafka_person_consumer.yaml` - Set up kafka consumer which will poll the person topic and insert data into the db
 10. `kubectl apply -f deployment/udaconnect-api_abh_persons.yaml` - Set up the person service and deployment for the person API
 11. `kubectl apply -f deployment/person-list-grpc-api.yaml` - Set up the person service and deployment for the person API
+12. `kubectl apply -f deployment/udaconnect-api_location.yaml` - Set up the location service and deployment for the location API
+13. `kubectl apply -f deployment/kafka_location_consumer.yaml` - et up kafka consumer which will poll the location topic and insert data into the db
 
 Manually applying each of the individual `yaml` files is cumbersome but going through each step provides some context on the content of the starter project. In practice, we would have reduced the number of steps by running the command against a directory to apply of the contents: `kubectl apply -f deployment/`.
 

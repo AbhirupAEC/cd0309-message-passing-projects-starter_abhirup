@@ -1,0 +1,7 @@
+jsonschema==3.0.2
+kafka-python==2.1.4
+psycopg2-binary==2.9.10
+shapely==2.1.0
+numpy==2.2.4
+
+

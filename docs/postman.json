@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "42f97209-e645-4431-87e6-24afbd4f1898",
-		"name": "person_api",
+		"name": "udaconnect_api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -29,6 +29,35 @@
 					"path": [
 						"person_api",
 						"persons"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create new location",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"76\",\r\n    \"person_id\": \"10\",\r\n    \"creation_time\": \"2020-04-07 10:37:06.000000\",\r\n    \"latitude\": \"35.058564\",\r\n    \"longitude\": \"-106.5721845\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:30002/api/locations",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "30002",
+					"path": [
+						"api",
+						"locations"
 					]
 				}
 			},
@@ -70,6 +99,27 @@
 						"person_api",
 						"persons",
 						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get location by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:30002/api/locations/50",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "30002",
+					"path": [
+						"api",
+						"locations",
+						"50"
 					]
 				}
 			},
